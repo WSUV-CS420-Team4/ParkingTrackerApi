@@ -8,6 +8,10 @@ $app->get('/', function () {
     echo 'Nothing to see here';
 });
 
+$app->post('/upload', function () {
+    //We could store stuff here
+});
+
 $app->run();
 
 ?>
