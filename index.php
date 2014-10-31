@@ -5,7 +5,7 @@ require 'vendor/autoload.php';
 $app = new \Slim\Slim();
 
 $app->get('/', function () {
-    echo 'Index';
+    echo 'Nothing to see here';
 });
 
 $app->run();
