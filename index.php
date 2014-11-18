@@ -34,7 +34,7 @@ $app->post('/blockfaces', function () {
 
     foreach ($data->blockfaces as $blockface) {
       $block = $blockface->block;
-      $face = $blockface->facel;
+      $face = $blockface->face;
       foreach ($blockface->stalls as $stall) {
         if (strlen($stall->plate) > 0) {
           $plate = $stall->plate;
