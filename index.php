@@ -43,7 +43,7 @@ $app->post('/blockfaces', function () use ($app, $db) {
       $block = $blockface->block;
       $face = $blockface->face;
       foreach ($blockface->stalls as $key => $stall) {
-        if (strlen($stall->plate) > 0) {
+        if ((isset($stall->plate)) && (strlen($stall->plate) > 0)) {
           $plate = $stall->plate;
           $stallNum = $key;
           $dt = DateTime::createFromFormat(DateTime::ISO8601, $stall->time);
@@ -51,6 +51,7 @@ $app->post('/blockfaces', function () use ($app, $db) {
           $insert->execute();
         } else {
           //empty stall
+          
         }
       }
     }
