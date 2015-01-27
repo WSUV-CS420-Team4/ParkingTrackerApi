@@ -1,9 +1,10 @@
+![South Waterfront](http://www.southwaterfront.com/images/swcr-logo.png)
+
 # Parking Tracker API
 
 [Android](https://github.com/WSUV-CS420-Team4/ParkingTracker)
 
 [Web](https://github.com/WSUV-CS420-Team4/ParkingTrackerWeb)
-
 
 [Docs](https://github.com/WSUV-CS420-Team4/ParkingTrackerDocs)
 
@@ -40,7 +41,7 @@ Currently accepts uploaded data and will provide lists of blockface data.
 
 Edit config.php
 
-##To Do
+## To Do
 
 - Analysis of usage
 - Authentication
