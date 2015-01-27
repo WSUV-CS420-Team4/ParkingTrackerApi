@@ -1,7 +1,9 @@
 # Parking Tracker API
 
 [Android](https://github.com/WSUV-CS420-Team4/ParkingTracker)
+
 [Web](https://github.com/WSUV-CS420-Team4/ParkingTrackerWeb)
+
 
 [Docs](https://github.com/WSUV-CS420-Team4/ParkingTrackerDocs)
 
