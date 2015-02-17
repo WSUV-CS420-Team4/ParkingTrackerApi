@@ -26,6 +26,7 @@ $app->get('/blockfaces/:id', function($id) use ($db) {
 });
 
 $app->post('/blockfaces', function () use ($app, $db) {
+    //Upload parking data
     $body = $app->request->getBody();
     $data = json_decode($body);
     if ($data === NULL) {
@@ -55,6 +56,16 @@ $app->post('/blockfaces', function () use ($app, $db) {
         }
       }
     }
+});
+
+$app->get('/streetmodel', function() use ($app, $db)) {
+  $dt = new DateTime();
+  $time = $dt->format(DateTime::ISO8601);
+
+  $results = $db->query("SELECT Block, Face, numStalls FROM Blocks ORDER BY Block, Face ASC");
+  $data = $results->fetchAll(PDO::FETCH_OBJ);
+
+  echo json_encode($data, JSON_NUMERIC_CHECK);
 });
 
 class Stall {
