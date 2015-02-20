@@ -58,14 +58,52 @@ $app->post('/blockfaces', function () use ($app, $db) {
     }
 });
 
-$app->get('/streetmodel', function() use ($app, $db)) {
+$app->get('/streetmodel', function () use ($app, $db) {
   $dt = new DateTime();
   $time = $dt->format(DateTime::ISO8601);
 
-  $results = $db->query("SELECT Block, Face, numStalls FROM Blocks ORDER BY Block, Face ASC");
-  $data = $results->fetchAll(PDO::FETCH_OBJ);
+  $results = $db->query("SELECT Block, Face, numStalls FROM Block ORDER BY Block, Face ASC");
+    
+  if ($results) {
+    $data = $results->fetchAll(PDO::FETCH_OBJ);
+  } else {
+    print_r($db->errorInfo());
+    $app->response->setStatus(404);
+    return;
+  }
 
   echo json_encode($data, JSON_NUMERIC_CHECK);
+});
+
+//Authentication
+
+$app->post('/login', function() use ($app, $db) {
+  $body = $app->request->getBody();
+  $data = json_decode($body);
+
+  if ($data === NULL) {
+    $app->response->setStatus(400);
+    return;
+  }
+
+  //Verify user/password
+  $stmt = $db->prepare("SELECT Password FROM User WHERE Name=:username");
+  $results = $stmt->execute(array(":username" => $data->username));
+
+  if ($results) {
+    $hash = $results->fetch['Password'];
+    if (password_verify($password, $hash)) {
+
+    } else {
+      //Bad password
+    }
+  } else {
+    $app->response->setStatus(400);
+    return;
+  }
+
+  //Create session
+
 });
 
 class Stall {
