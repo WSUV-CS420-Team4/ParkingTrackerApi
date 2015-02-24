@@ -14,7 +14,7 @@ $app->get('/blockfaces', function () use ($db) {
   //Retrieve all? blockfaces
   //Should probably paginate
   $results = $db->query("SELECT Plate, Block, Face, Stall, Time FROM Parking ORDER BY Block, Face, Stall");
-  $data = $results->fetchAll(PDO::FETCH_OBJ);
+  $data = array('blockfaces' => $results->fetchAll(PDO::FETCH_OBJ));
   echo json_encode($data, JSON_NUMERIC_CHECK);
 });
 
@@ -41,13 +41,13 @@ $app->post('/blockfaces', function () use ($app, $db) {
     $insert->bindParam(':time', $time);
 
     foreach ($data->blockfaces as $blockface) {
-      $block = $blockface->block;
-      $face = $blockface->face;
-      foreach ($blockface->stalls as $key => $stall) {
-        if ((isset($stall->plate)) && (strlen($stall->plate) > 0)) {
-          $plate = $stall->plate;
+      $block = $blockface->Block;
+      $face = $blockface->Face;
+      foreach ($blockface->Stalls as $key => $stall) {
+        if ((isset($stall->Plate)) && (strlen($stall->Plate) > 0)) {
+          $plate = $stall->Plate;
           $stallNum = $key;
-          $dt = DateTime::createFromFormat(DateTime::ISO8601, $stall->time);
+          $dt = DateTime::createFromFormat(DateTime::ISO8601, $stall->Time);
           $time = $dt->format("Y-m-d H:i:s");
           $insert->execute();
         } else {
@@ -72,7 +72,9 @@ $app->get('/streetmodel', function () use ($app, $db) {
     return;
   }
 
-  echo json_encode($data, JSON_NUMERIC_CHECK);
+  $out = array('blockfaces' => $data);
+
+  echo json_encode($out, JSON_NUMERIC_CHECK);
 });
 
 //Authentication
