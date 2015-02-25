@@ -83,7 +83,7 @@ $app->post('/login', function() use ($app, $db) {
   $body = $app->request->getBody();
   $data = json_decode($body);
 
-  if ($data === NULL) {
+  if (($data === NULL) || (!method_exists($data, 'Username')) || (!method_exists($data, 'Password'))) {
     badRequest($app);
     return;
   }
