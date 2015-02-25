@@ -89,22 +89,30 @@ $app->post('/login', function() use ($app, $db) {
   }
 
   //Verify user/password
-  $stmt = $db->prepare("SELECT Password FROM User WHERE Name=:username");
-  $results = $stmt->execute(array(":username" => $data->username));
+  $stmt = $db->prepare("SELECT UserId, Password FROM User WHERE Name=:username");
+  $results = $stmt->execute(array(":username" => $data->Username));
 
   if ($results) {
-    $hash = $results->fetch['Password'];
-    if (password_verify($password, $hash)) {
-
+    $row = $stmt->fetch();
+    $hash = $row['Password'];
+    if (password_verify($data->Password, $hash)) {
+      //Create session
+      $sessionToken = bin2hex(openssl_random_pseudo_bytes(32));
+      $stmt = $db->prepare("INSERT INTO Session (UserId, SessionToken, LastSeen) VALUES (:userid, :session, NOW())");
+      $res = $stmt->execute(array(":userid" => $row['UserId'], ":session" => $sessionToken));
+      $data = array('Token' => $sessionToken);
+      echo json_encode($data);
     } else {
       //Bad password
+      $app->response->setStatus(401);
+      $data = array("error" => "Failed authentication");
+      echo json_encode($data);
+      return;
     }
   } else {
     badRequest($app);
     return;
   }
-
-  //Create session
 
 });
 
