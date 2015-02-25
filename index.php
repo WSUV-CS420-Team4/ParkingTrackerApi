@@ -72,7 +72,7 @@ $app->get('/streetmodel', function () use ($app, $db) {
     return;
   }
 
-  $out = array('blockfaces' => $data);
+  $out = array('blockfaces' => $data, 'epochTime' => $time);
 
   echo json_encode($out, JSON_NUMERIC_CHECK);
 });
