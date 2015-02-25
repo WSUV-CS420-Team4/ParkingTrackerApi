@@ -30,7 +30,7 @@ $app->post('/blockfaces', function () use ($app, $db) {
     $body = $app->request->getBody();
     $data = json_decode($body);
     if ($data === NULL) {
-      $app->response->setStatus(400);
+      badRequest($app);
       return;
     }
     $insert = $db->prepare("INSERT INTO Parking (Plate, Block, Face, Stall, Time) VALUES (:plate, :block, :face, :stall, :time)");
@@ -84,7 +84,7 @@ $app->post('/login', function() use ($app, $db) {
   $data = json_decode($body);
 
   if ($data === NULL) {
-    $app->response->setStatus(400);
+    badRequest($app);
     return;
   }
 
@@ -100,13 +100,21 @@ $app->post('/login', function() use ($app, $db) {
       //Bad password
     }
   } else {
-    $app->response->setStatus(400);
+    badRequest($app);
     return;
   }
 
   //Create session
 
 });
+
+function badRequest($app) {
+  $app->response->setStatus(400);
+  $data = array("error" => "Bad request");
+  echo json_encode($data);
+  return;
+}
+
 
 class Stall {
     public $Plate;
