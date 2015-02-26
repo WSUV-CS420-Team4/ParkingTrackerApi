@@ -98,8 +98,8 @@ $app->post('/login', function() use ($app, $db) {
     if (password_verify($data->Password, $hash)) {
       //Create session
       $sessionToken = bin2hex(openssl_random_pseudo_bytes(32));
-      $stmt = $db->prepare("INSERT INTO Session (UserId, SessionToken, LastSeen) VALUES (:userid, :session, NOW())");
-      $res = $stmt->execute(array(":userid" => $row['UserId'], ":session" => $sessionToken));
+      $stmt = $db->prepare("INSERT INTO Session (UserId, SessionToken, LastSeen) VALUES (:userid, :token, NOW())");
+      $res = $stmt->execute(array(":userid" => $row['UserId'], ":token" => $sessionToken));
       $data = array('Token' => $sessionToken);
       echo json_encode($data);
     } else {
