@@ -120,7 +120,7 @@ function badRequest($app) {
   $app->response->setStatus(400);
   $data = array("error" => "Bad request");
   echo json_encode($data);
-  return;
+  exit();
 }
 
 
