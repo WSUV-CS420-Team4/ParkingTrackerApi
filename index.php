@@ -124,12 +124,6 @@ function badRequest($app) {
 }
 
 
-class Stall {
-    public $Plate;
-    public $Block;
-    public $Face;
-    public $Stall;
-    public $Time;
 }
 $app->run();
 
