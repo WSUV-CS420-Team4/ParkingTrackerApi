@@ -123,6 +123,12 @@ function badRequest($app) {
   exit();
 }
 
+function unauthorizedRequest($app) {
+  $app->response->setStatus(401);
+  $data = array("error" => "Request not authorized");
+  echo json_encode($data);
+  exit();  
+}
 
 }
 $app->run();
