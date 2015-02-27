@@ -13,6 +13,7 @@ $app->get('/', function () {
 $app->get('/blockfaces', function () use ($db) {
   //Retrieve all? blockfaces
   //Should probably paginate
+  checkSession($app, $db);
   $results = $db->query("SELECT Plate, Block, Face, Stall, Time FROM Parking ORDER BY Block, Face, Stall");
   $data = array('blockfaces' => $results->fetchAll(PDO::FETCH_OBJ));
   echo json_encode($data, JSON_NUMERIC_CHECK);
@@ -20,6 +21,7 @@ $app->get('/blockfaces', function () use ($db) {
 
 $app->get('/blockfaces/:id', function($id) use ($db) {
   //Retrieve single blockface
+  checkSession($app, $db);
   $stmt = $db->prepare("SELECT Plate, Block, Face, Stall, Time FROM Parking WHERE ParkingId = :id");
   $stmt->execute(array(":id" => $id));
   echo json_encode($stmt->fetchObject("Stall"), JSON_NUMERIC_CHECK);
@@ -56,9 +58,12 @@ $app->post('/blockfaces', function () use ($app, $db) {
         
       }
     }
+  }
 });
 
 $app->get('/streetmodel', function () use ($app, $db) {
+  checkSession($app, $db);
+
   $dt = new DateTime();
   $time = $dt->format(DateTime::ISO8601);
 
