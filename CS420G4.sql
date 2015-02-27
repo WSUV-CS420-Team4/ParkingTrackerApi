@@ -7,7 +7,7 @@
 #
 # Host: bend.encs.vancouver.wsu.edu (MySQL 5.6.22)
 # Database: CS420G4
-# Generation Time: 2015-02-27 00:06:13 +0000
+# Generation Time: 2015-02-27 00:20:51 +0000
 # ************************************************************
 
 
@@ -269,18 +269,15 @@ CREATE TABLE `User` (
   `UserId` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `Name` varchar(32) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `Password` varchar(255) NOT NULL,
-  `RoleId` int(10) unsigned NOT NULL DEFAULT '1',
-  PRIMARY KEY (`UserId`),
-  KEY `RoleId` (`RoleId`),
-  CONSTRAINT `user_ibfk_1` FOREIGN KEY (`RoleId`) REFERENCES `Role` (`RoleId`) ON UPDATE CASCADE
+  PRIMARY KEY (`UserId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
 
-INSERT INTO `User` (`UserId`, `Name`, `Password`, `RoleId`)
+INSERT INTO `User` (`UserId`, `Name`, `Password`)
 VALUES
-	(1,'Test','$2y$10$nkoefdL7b5hJPx/yX2M8keXftTrEGdAsggX9a/JfYXFBPHYY3Bxpi',1);
+	(1,'Test','$2y$10$nkoefdL7b5hJPx/yX2M8keXftTrEGdAsggX9a/JfYXFBPHYY3Bxpi');
 
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
