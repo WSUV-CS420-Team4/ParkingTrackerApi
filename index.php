@@ -121,6 +121,36 @@ $app->post('/login', function() use ($app, $db) {
 
 });
 
+// User account manipulation
+
+//User account creation
+$app->post('/user', function () use ($app, $db) {
+  checkSession($app, $db);
+  $body = $app->request->getBody();
+  $data = json_decode($body);
+
+  if (($data === NULL) || (!method_exists($data, 'Username')) || (!method_exists($data, 'Password'))) {
+    badRequest($app);
+    return;
+  }
+
+  $stmt = $db->prepare("INSERT INTO User (Name, Password) VALUES (:name, :password)");
+  $res = $stmt->execute(array(":name" => $data->Username, ":password" => password_hash($data->Password, PASSWORD_DEFAULT)));
+
+  if (!$res) {
+
+  }
+
+  //Add user role
+  $userid = $db->lastInsertId();
+  $stmt = $db->prepare("INSERT INTO UserRoles (UserId, RoleId) VALUES (:userid, :roleid)");
+  $res = $stmt->execute(array(":userid" => $userid, ":roleid" => ROLE_USER));
+
+  if (!$res) {
+
+  }
+});
+
 function badRequest($app) {
   $app->response->setStatus(400);
   $data = array("error" => "Bad request");
