@@ -107,6 +107,13 @@ $app->post('/login', function() use ($app, $db) {
       $res = $stmt->execute(array(":userid" => $row['UserId'], ":token" => $sessionToken));
       $data = array('Token' => $sessionToken);
       echo json_encode($data);
+
+      //Keep password formats up to date
+      if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
+        $hash = password_hash($data->Password, PASSWORD_DEFAULT);
+        $stmt = $db->prepare("UPDATE User SET Password=:password WHERE UserId=:userid");
+        $stmt->execute(array(":userid" => $row['UserId'], ":password" => $hash));
+      }
     } else {
       //Bad password
       $app->response->setStatus(401);
