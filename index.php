@@ -130,6 +130,31 @@ function unauthorizedRequest($app) {
   exit();  
 }
 
+define("ROLE_USER", 1);
+define("ROLE_ADMIN", 2);
+
+function checkSession($app, $db, $permission=ROLE_USER) {
+  $token = $app->request->headers->get('X-Auth-Token');
+  if ($token) {
+    $stmt = $db->prepare("SELECT ur.RoleId FROM Session AS s INNER JOIN UserRoles AS ur ON s.UserId=ur.UserId WHERE s.SessionToken = :token");
+    $res = $stmt->execute(array(":token" => $token));
+
+    if ($res) {
+      foreach($stmt->fetchAll() as $row) {
+        $role = $row['RoleId'];
+        if ($role == $permission) {
+          return true;
+        }
+      }
+
+      unauthorizedRequest($app);
+    } else {
+      unauthorizedRequest($app);
+      return false;
+    }
+  }
+
+  badRequest($app);
 }
 $app->run();
 
