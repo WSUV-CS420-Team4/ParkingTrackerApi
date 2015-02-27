@@ -156,6 +156,35 @@ function checkSession($app, $db, $permission=ROLE_USER) {
 
   badRequest($app);
 }
+
+//Test endpoints
+
+$app->get('/test/auth', function () use ($app, $db) {
+  $data = array();
+
+  if (checkSession($app, $db)) {
+    $data['success'] = 1;
+  } else {
+    $data['success'] = 0;
+  }
+
+  echo json_encode($data, JSON_NUMERIC_CHECK);
+  return;
+});
+
+$app->get('/test/authAdmin', function () use ($app, $db) {
+  $data = array();
+
+  if (checkSession($app, $db, ROLE_ADMIN)) {
+    $data['success'] = 1;
+  } else {
+    $data['success'] = 0;
+  }
+
+  echo json_encode($data, JSON_NUMERIC_CHECK);
+  return;
+});
+
 $app->run();
 
 ?>
