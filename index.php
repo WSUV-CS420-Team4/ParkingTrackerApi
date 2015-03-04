@@ -19,12 +19,12 @@ $app->get('/blockfaces', function () use ($db) {
   echo json_encode($data, JSON_NUMERIC_CHECK);
 });
 
-$app->get('/blockfaces/:id', function($id) use ($db) {
+$app->get('/blockfaces/:id', function($id) use ($app,$db) {
   //Retrieve single blockface
   checkSession($app, $db);
   $stmt = $db->prepare("SELECT Plate, Block, Face, Stall, Time FROM Parking WHERE ParkingId = :id");
   $stmt->execute(array(":id" => $id));
-  echo json_encode($stmt->fetchObject("Stall"), JSON_NUMERIC_CHECK);
+  echo json_encode($stmt->fetch(), JSON_NUMERIC_CHECK);
 });
 
 $app->post('/blockfaces', function () use ($app, $db) {
@@ -59,6 +59,10 @@ $app->post('/blockfaces', function () use ($app, $db) {
       }
     }
   }
+});
+
+$app->get('/stats/usage', function () use ($app, $db) {
+
 });
 
 $app->get('/streetmodel', function () use ($app, $db) {
@@ -158,6 +162,12 @@ $app->post('/user', function () use ($app, $db) {
   }
 });
 
+
+//Update user
+$app->put('/user', function () use ($app, $db) {
+
+});
+
 function badRequest($app) {
   $app->response->setStatus(400);
   $data = array("error" => "Bad request");
@@ -172,13 +182,20 @@ function unauthorizedRequest($app) {
   exit();  
 }
 
+function serverError($app) {
+  $app->response->setStatus(500);
+  
+}
+
 define("ROLE_USER", 1);
 define("ROLE_ADMIN", 2);
 
 function checkSession($app, $db, $permission=ROLE_USER) {
   $token = $app->request->headers->get('X-Auth-Token');
   if ($token) {
-    $stmt = $db->prepare("SELECT ur.RoleId FROM Session AS s INNER JOIN UserRoles AS ur ON s.UserId=ur.UserId WHERE s.SessionToken = :token");
+    $stmt = $db->prepare("SELECT ur.RoleId FROM Session AS s
+      INNER JOIN UserRoles AS ur ON s.UserId=ur.UserId
+      WHERE s.SessionToken = :token");
     $res = $stmt->execute(array(":token" => $token));
 
     if ($res) {
@@ -188,15 +205,10 @@ function checkSession($app, $db, $permission=ROLE_USER) {
           return true;
         }
       }
-
-      unauthorizedRequest($app);
-    } else {
-      unauthorizedRequest($app);
-      return false;
     }
   }
-
-  badRequest($app);
+  unauthorizedRequest($app);
+  return false;
 }
 
 //Test endpoints
