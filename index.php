@@ -14,7 +14,12 @@ $app->get('/blockfaces', function () use ($db) {
   //Retrieve all? blockfaces
   //Should probably paginate
   checkSession($app, $db);
-  $results = $db->query("SELECT Plate, Block, Face, Stall, Time FROM Parking ORDER BY Block, Face, Stall");
+  $results = $db->query("SELECT Plate, Block, Face, Stall, Time, GROUP_CONCAT(a.Abbreviation SEPARATOR ',') AS Attributes
+                          FROM Parking AS p
+                          LEFT JOIN ParkingAttributes AS pa ON p.ParkingId=pa.ParkingId
+                          LEFT JOIN Attribute AS a ON pa.AttributeId=a.AttributeId
+                          GROUP BY Block, Face, Stall
+                          ORDER BY Block, Face, Stall");
   $data = array('blockfaces' => $results->fetchAll(PDO::FETCH_OBJ));
   echo json_encode($data, JSON_NUMERIC_CHECK);
 });
@@ -22,7 +27,13 @@ $app->get('/blockfaces', function () use ($db) {
 $app->get('/blockfaces/:id', function($id) use ($app,$db) {
   //Retrieve single blockface
   checkSession($app, $db);
-  $stmt = $db->prepare("SELECT Plate, Block, Face, Stall, Time FROM Parking WHERE ParkingId = :id");
+  $stmt = $db->prepare("SELECT Plate, Block, Face, Stall, Time, GROUP_CONCAT(a.Abbreviation SEPARATOR ',') AS Attributes
+                          FROM Parking AS p
+                          LEFT JOIN ParkingAttributes AS pa ON p.ParkingId=pa.ParkingId
+                          LEFT JOIN Attribute AS a ON pa.AttributeId=a.AttributeId
+                          WHERE ParkingId=:id
+                          GROUP BY Block, Face, Stall
+                          ORDER BY Block, Face, Stall");
   $stmt->execute(array(":id" => $id));
   echo json_encode($stmt->fetch(), JSON_NUMERIC_CHECK);
 });
