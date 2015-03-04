@@ -48,5 +48,4 @@ Copy config.example.php to config.php and replace the example values with the co
 ## To Do
 
 - Analysis of parking usage
-- Authentication (Oauth2)
 - Spreadsheet creation
