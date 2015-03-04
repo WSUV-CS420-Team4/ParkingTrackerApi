@@ -17,7 +17,7 @@ Sponsor: [South Waterfront](http://www.southwaterfront.com/)
 ## Component Overview
 
 A PHP REST API using Slim. It is used to collect data from the ParkingTracker Android application and to provide
-a backend for the analysis web application. The API will also handle authentication via Oauth2.
+a backend for the analysis web application. The API will also handle authentication via tokens.
 
 ## Authors
 
