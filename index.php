@@ -10,11 +10,11 @@ $app->get('/', function () {
     echo 'Nothing to see here';
 });
 
-$app->get('/blockfaces', function () use ($db) {
+$app->get('/blockfaces', function () use ($app,$db) {
   //Retrieve all? blockfaces
   //Should probably paginate
   checkSession($app, $db);
-  $results = $db->query("SELECT Plate, Block, Face, Stall, Time, GROUP_CONCAT(a.Abbreviation SEPARATOR ',') AS Attributes
+  $results = $db->query("SELECT Plate, Block, Face, Stall, Time, GROUP_CONCAT(a.Abbreviation SEPARATOR ',') AS Attr
                           FROM Parking AS p
                           LEFT JOIN ParkingAttributes AS pa ON p.ParkingId=pa.ParkingId
                           LEFT JOIN Attribute AS a ON pa.AttributeId=a.AttributeId
@@ -27,15 +27,17 @@ $app->get('/blockfaces', function () use ($db) {
 $app->get('/blockfaces/:id', function($id) use ($app,$db) {
   //Retrieve single blockface
   checkSession($app, $db);
-  $stmt = $db->prepare("SELECT Plate, Block, Face, Stall, Time, GROUP_CONCAT(a.Abbreviation SEPARATOR ',') AS Attributes
+  $stmt = $db->prepare("SELECT Plate, Block, Face, Stall, Time, GROUP_CONCAT(a.Abbreviation SEPARATOR ',') AS Attr
                           FROM Parking AS p
                           LEFT JOIN ParkingAttributes AS pa ON p.ParkingId=pa.ParkingId
                           LEFT JOIN Attribute AS a ON pa.AttributeId=a.AttributeId
-                          WHERE ParkingId=:id
+                          WHERE p.ParkingId=:id
                           GROUP BY Block, Face, Stall
                           ORDER BY Block, Face, Stall");
   $stmt->execute(array(":id" => $id));
-  echo json_encode($stmt->fetch(), JSON_NUMERIC_CHECK);
+  $stall = $stmt->fetchObject();
+  $data = $stall ? $stall : array();
+  echo json_encode($data, JSON_NUMERIC_CHECK);
 });
 
 $app->post('/blockfaces', function () use ($app, $db) {
@@ -64,6 +66,18 @@ $app->post('/blockfaces', function () use ($app, $db) {
         $dt = DateTime::createFromFormat(DateTime::ISO8601, $stall->Time);
         $time = $dt->format("Y-m-d H:i:s");
         $insert->execute();
+
+        if (count($stall->Attr)) {
+          $id = $db->lastInsertId();
+          $attrStmt = $db->prepare("INSERT INTO ParkingAttributes (ParkingId, AttributeId) VALUES (:parking, :attr)");
+          $attrStmt->bindParam(':parking', $id);
+          $attrStmt->bindParam(':attr', $attr);
+
+          foreach ($stall->Attr as $attr) {
+            $attrStmt->execute();
+          }
+        }
+        
       } else {
         //empty stall
         
@@ -179,9 +193,12 @@ $app->put('/user', function () use ($app, $db) {
 
 });
 
-function badRequest($app) {
+function badRequest($app, $msg=false) {
   $app->response->setStatus(400);
   $data = array("error" => "Bad request");
+  if ($msg) {
+    $data['msg'] = $msg;
+  }
   echo json_encode($data);
   exit();
 }
@@ -193,9 +210,14 @@ function unauthorizedRequest($app) {
   exit();  
 }
 
-function serverError($app) {
+function serverError($app, $msg=false) {
   $app->response->setStatus(500);
-  
+  $data = array("error" => "Server error");
+  if ($msg) {
+    $data['msg'] = $msg;
+  }
+  echo json_encode($data);
+  exit();  
 }
 
 define("ROLE_USER", 1);
@@ -253,3 +275,4 @@ $app->get('/test/authAdmin', function () use ($app, $db) {
 $app->run();
 
 ?>
+
