@@ -235,6 +235,8 @@ function checkSession($app, $db, $permission=ROLE_USER) {
       foreach($stmt->fetchAll() as $row) {
         $role = $row['RoleId'];
         if ($role == $permission) {
+          $update = $db->prepare("UPDATE Session SET LastSeen = NOW() WHERE SessionToken = :token");
+          $update->execute(array(":token" => $token));
           return true;
         }
       }
