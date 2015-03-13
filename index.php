@@ -116,9 +116,9 @@ $app->get('/streetmodel', function () use ($app, $db) {
 $app->post('/login', function() use ($app, $db) {
   $body = $app->request->getBody();
   $data = json_decode($body);
-
-  if (($data === NULL) || (!method_exists($data, 'Username')) || (!method_exists($data, 'Password'))) {
-    badRequest($app);
+  
+  if (($data === NULL) || (!property_exists($data, 'Username')) || (!property_exists($data, 'Password'))) {
+    badRequest($app, "Incorrect parameters given. Username and Password fields expected");
     return;
   }
 
@@ -151,7 +151,10 @@ $app->post('/login', function() use ($app, $db) {
       return;
     }
   } else {
-    badRequest($app);
+    //Bad user
+    $app->response->setStatus(401);
+    $data = array("error" => "Failed authentication");
+    echo json_encode($data);
     return;
   }
 
@@ -165,7 +168,7 @@ $app->post('/user', function () use ($app, $db) {
   $body = $app->request->getBody();
   $data = json_decode($body);
 
-  if (($data === NULL) || (!method_exists($data, 'Username')) || (!method_exists($data, 'Password'))) {
+  if (($data === NULL) || (!property_exists($data, 'Username')) || (!property_exists($data, 'Password'))) {
     badRequest($app);
     return;
   }
